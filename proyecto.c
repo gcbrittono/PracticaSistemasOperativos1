@@ -17,13 +17,13 @@ struct datos {
 };
 
 
-void toLower (char* string){
-	int i=0;	
-	for(i=0;i<string[i];i++){
-		string[i]=tolower(string[i]);	
-	}
-	snprintf(str,sizeof(str),"%s",string);
-	
+char* convertir_minusculas(char* string){
+      size_t size = sizeof(string);
+      for(int i=0;i<size;i++){
+          string [i]=tolower(string[i]);
+      }
+  
+      return string;
 }
 
 int funHash(char* str){
@@ -36,26 +36,28 @@ int funHash(char* str){
 }
 
 int recibir(void *ap){
-        struct datos *dato;
-        dato=ap;
-	  char input[32];
-        printf("Ingrese el nombre de su mascota:");
-        scanf("%s", dato->nombre);
-	  printf("Ingrese el tipo de mascota:");
-        scanf("%s", input);
-	  toLower(input);
-	  snprintf(dato->tipo,sizeof(dato->tipo),"%s",str);			
-        printf("Ingrese la edad de su mascota:");
-        scanf("%i", &dato->edad);
-        printf("Ingrese la raza de su mascota:");
-        scanf("%s", dato->raza);
-        printf("Ingrese la estatura de su mascota:");
-        scanf("%i", &dato->estatura);
-        printf("Ingrese el peso de su mascota:");
-        scanf("%lf", &dato->peso);
-        printf("Ingrese el sexo de su mascota:");
-        scanf(" %c", &dato->sexo);
+   struct datos *dato;
+   dato=ap;
+   
 
+        printf("Ingrese el nombre de su mascota:");
+         scanf("%s", dato->nombre);
+         convertir_minusculas(dato->nombre);
+	printf("Ingrese el tipo de mascota:");
+         scanf("%s", dato->tipo);
+         convertir_minusculas(dato->tipo);	 		
+        printf("Ingrese la edad de su mascota:");
+         scanf("%i", &dato->edad);
+        printf("Ingrese la raza de su mascota:");
+         scanf("%s", dato->raza);
+         convertir_minusculas(dato->raza);
+        printf("Ingrese la estatura de su mascota:");
+         scanf("%i", &dato->estatura);
+        printf("Ingrese el peso de su mascota:");
+         scanf("%lf", &dato->peso);
+        printf("Ingrese el sexo de su mascota:");
+         scanf(" %c", &dato->sexo);
+      
 }
 
 
