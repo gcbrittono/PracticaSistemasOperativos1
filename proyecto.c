@@ -1,7 +1,10 @@
-
 #include<stdio.h>
 #include<stdlib.h>
 #include<stdbool.h>
+#include<string.h>
+#include<ctype.h>
+
+char str[32];
 
 struct datos {
         char nombre[32];
@@ -13,13 +16,35 @@ struct datos {
         char   sexo;
 };
 
+
+void toLower (char* string){
+	int i=0;	
+	for(i=0;i<string[i];i++){
+		string[i]=tolower(string[i]);	
+	}
+	snprintf(str,sizeof(str),"%s",string);
+	
+}
+
+int funHash(char* str){
+	int i;
+	int ans=0;
+	for(i=0;i<strlen(str);i++){
+		ans+=(int)str[i];	
+	}
+	return ans%1000;
+}
+
 int recibir(void *ap){
         struct datos *dato;
         dato=ap;
+	  char input[32];
         printf("Ingrese el nombre de su mascota:");
         scanf("%s", dato->nombre);
-        printf("Ingrese el tipo de mascota:");
-        scanf("%s", dato->tipo);
+	  printf("Ingrese el tipo de mascota:");
+        scanf("%s", input);
+	  toLower(input);
+	  snprintf(dato->tipo,sizeof(dato->tipo),"%s",str);			
         printf("Ingrese la edad de su mascota:");
         scanf("%i", &dato->edad);
         printf("Ingrese la raza de su mascota:");
@@ -57,14 +82,15 @@ void ingresar_registro(){
 
 }
 
-
 int main(){
-while(true){
-  int menu = 0;
+int menu = 0;
+bool flag=true;
+while(flag){
+	char hola[32];
 
-
-  printf("Menú: \n 1. Ingresar registro \n 2. Ver registro \n 3. Borrar registro \n 4. Buscar registro \n 5. Salir \n");
-    scanf("%i", &menu);
+	
+	printf("MenÃº: \n 1. Ingresar registro \n 2. Ver registro \n 3. Borrar registro \n 4. Buscar registro \n 5. Salir \n");
+    	scanf("%i", &menu);
 
      switch(menu){
       case 1:
@@ -80,13 +106,19 @@ while(true){
       printf("4");
       break;
       case 5:
-      printf("5");
+      flag=false;
       break;
       default:
       printf("default");       
      }
-      printf("Presione cualquier tecla para volver al menu principal \n");
-      getchar();       
+	printf("%s",str);
+	if(flag){
+      	printf("Presione cualquier tecla para volver al menu principal \n");
+		scanf("%s", hola);   
+	}      	
+	
 }
+	
     return 0;
 }
+
