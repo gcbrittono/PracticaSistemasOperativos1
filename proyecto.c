@@ -3,6 +3,7 @@
 #include<stdbool.h>
 #include<string.h>
 #include<ctype.h>
+#include<stddef.h>
 
 char str[32];
 
@@ -18,10 +19,11 @@ struct datos {
 
 
 char* convertir_minusculas(char* string){   //Funcion que devuelve una cadena de caracteres en minuscula
-      size_t size = sizeof(string);
+      size_t size = strlen(string);
       for(int i=0;i<size;i++){
           string [i]=tolower(string[i]);
       }
+
       return string;
 }
 
