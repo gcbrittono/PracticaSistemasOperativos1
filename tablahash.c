@@ -3,11 +3,31 @@
 #include <string.h>
 
 
+
+
 typedef struct mydata_tag {
       int used; /* 0 = empty, 1 = used */
       int key;
-      char name[24];
+      char* name;
 } mydata;
+
+
+/*===========================================================================*/
+/* hash function optimized for strings with big hash tables sizes            */
+/*===========================================================================*/
+typedef unsigned int INDEX;
+
+INDEX hash (char* key, unsigned int H_SIZE){
+      unsigned int hash_val=0;
+      while(*key != '\0'){
+          hash_val = (hash_val<<5)+*key++;
+      }
+  
+      return (hash_val%H_SIZE);
+}
+
+
+/*===========================================================================*/
 
 
 
@@ -42,6 +62,7 @@ int hash_key(char* name){
     return key;
 }
 
+
 void init_table (char* filename, int size){
     FILE *fp;
     mydata data;
@@ -56,7 +77,6 @@ void init_table (char* filename, int size){
         fwrite(&data, sizeof(mydata), 1, fp);        
 
     }
-
 }
 
 void insert_data(int key, char* name, char* filename){
@@ -68,7 +88,7 @@ void insert_data(int key, char* name, char* filename){
      data.used=1;
      data.key=key;
      strcpy(data.name, name);     
-
+ 
      fp=fopen(filename, "r+");
      if(fp == NULL){
        perror("fopen: insert_data");
@@ -76,6 +96,7 @@ void insert_data(int key, char* name, char* filename){
      }
      
      while(1){
+       printf("slot: %d", slot.used);
        fseek(fp, pos*sizeof(mydata), SEEK_SET);
        fread(&slot, sizeof(mydata), 1, fp);
        if(slot.used != 1){
@@ -83,8 +104,10 @@ void insert_data(int key, char* name, char* filename){
 
        }
        printf("Collison!\n");
+       printf("pos1:%d ",pos);
        pos++;
-       pos %=10;
+       pos %=1000;
+       printf("posmod:%d ",pos);
      }
      printf("pos = %d\n", pos);
      fseek(fp, pos*sizeof(mydata), SEEK_SET);
@@ -92,7 +115,7 @@ void insert_data(int key, char* name, char* filename){
      fclose(fp);
 }
 
-void print_buckets(char* filename){
+void print_buckets(char* filename, unsigned int H_SIZE){
      FILE *fp;
      mydata data;
      int i;
@@ -103,12 +126,11 @@ void print_buckets(char* filename){
        exit(1);
      }
 
-     for(i=0;i<10;i++){
+     for(i=0;i<H_SIZE;i++){
         fread(&data, sizeof(mydata), 1, fp);
         printf("used = %d, key = %d, data = %s\n", data.used, data.key, data.name);
 
      }
-
 
      fclose(fp);
 }
@@ -119,7 +141,29 @@ int main(){
     
   int key;
 
-  char* names[7] ={
+  char* names[29] ={
+     "John",
+     "Steve",
+     "Ajit",
+     "Premal",
+     "Kho",
+     "Xiang",
+     "Yamamoto",
+     "Giovani",
+     "Daniel",
+     "Lucas",
+     "Maria",
+     "Pedro",
+     "Khaterin",
+     "Xiomara",
+     "Yamamoto",
+     "John",
+     "Esteban",
+     "ndres",
+     "Laura",
+     "Hector",
+     "Ivonne",
+     "Luis",
      "John",
      "Steve",
      "Ajit",
@@ -129,7 +173,7 @@ int main(){
      "Yamamoto"
   };
 
-  init_table("myhashtable",10);
+  init_table("myhashtable",1000);
 
 /*
   for(int i=0;i<7;i++){
@@ -138,11 +182,11 @@ int main(){
   }
 */
  
-  for(int i=0;i<7;i++){
-     key = hash_key(names[i]);
+  for(int i=0;i<1000;i++){
+     key = hash(names[i],1000);
      insert_data(key, names[i], "myhashtable");
   }
-  print_buckets("myhashtable");
+  print_buckets("myhashtable",1000);
   
 
 
