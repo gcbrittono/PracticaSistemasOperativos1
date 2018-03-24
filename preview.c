@@ -6,7 +6,7 @@
 
 #define HASH_SIZE 1000
 
-#include "hash.c"
+#include "tabla hash.c"
 char str[32];
 
 
@@ -134,7 +134,7 @@ while(flag){
 	char hola[32];
 
 	
-	printf("MenÃº: \n 1. Ingresar registro \n 2. Ver registro \n 3. Borrar registro \n 4. Buscar registro \n 5. Salir \n");
+	printf("Menú: \n 1. Ingresar registro \n 2. Ver registro \n 3. Borrar registro \n 4. Buscar registro \n 5. Salir \n");
     	scanf("%i", &menu);
 
      switch(menu){
@@ -166,4 +166,3 @@ while(flag){
 
     return 0;
 }
-
