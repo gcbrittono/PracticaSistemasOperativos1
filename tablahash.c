@@ -88,7 +88,7 @@ void insert_data(int key, char* name, char* filename){
      data.used=1;
      data.key=key;
      strcpy(data.name, name);     
- 
+ printf(" slot0 : %d", slot.used);
      fp=fopen(filename, "r+");
      if(fp == NULL){
        perror("fopen: insert_data");
@@ -96,23 +96,24 @@ void insert_data(int key, char* name, char* filename){
      }
      
      while(1){
-       printf("slot: %d", slot.used);
+       printf(" slot : %d", slot.used);
        fseek(fp, pos*sizeof(mydata), SEEK_SET);
        fread(&slot, sizeof(mydata), 1, fp);
        if(slot.used != 1){
            break;     
 
        }
-       printf("Collison!\n");
+       printf(" Collison!\n");
        printf("pos1:%d ",pos);
        pos++;
        pos %=1000;
        printf("posmod:%d ",pos);
      }
-     printf("pos = %d\n", pos);
+     printf(" pos = %d\n", pos);
      fseek(fp, pos*sizeof(mydata), SEEK_SET);
      fwrite(&data, sizeof(mydata), 1, fp);
      fclose(fp);
+    
 }
 
 void print_buckets(char* filename, unsigned int H_SIZE){
