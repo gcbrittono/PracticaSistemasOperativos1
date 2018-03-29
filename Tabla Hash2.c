@@ -11,15 +11,16 @@ int cantidadDeRegistros = -1;
 struct DogType {
         char nombre[32];
         char tipo[32];
-        int32_t edad;
+        int edad;
         char raza[16];
-        int32_t estatura;
+        int estatura;
         double peso;
         char   sexo;
 };
 
 struct ListNode{
 	struct ListNode *next;
+	struct ListNode *tail;
 	int data;
 	bool used;
 };
@@ -46,6 +47,7 @@ struct ListNode * getEmptyListNode(){
 	salida->next = NULL;
 	salida->used = false;
 	salida->data = -1;
+	salida->tail = salida;
 	return salida;
 }
 
@@ -65,25 +67,32 @@ int setElementInHash(struct ListNode *hashAp, int data, char *nombre){
 	
 	int hashVal = funHash(nombre);
 	
-	struct ListNode *actual = &hashAp[(int)fabs(hashVal % HASH_SIZE)];
-	while(actual->used){
-		actual = actual->next;		
+	struct ListNode *actual = &hashAp[hashVal];
+
+	if(actual->used){
+		struct ListNode *last = actual->tail;
+		last->data = data;
+		last->used = true;
+		last->next = getEmptyListNode();
+		actual->tail = last->next;			
+	}else{
+		actual->data=data;
+		actual->used = true;
+		actual->next=getEmptyListNode();
+		actual->tail= actual->next;
 	}
 	
-	actual->data = data;
-	actual->used = true;
-	actual->next = getEmptyListNode();
 	return hashVal;
 }
 
 void printDogType(struct DogType *mascota){
-	printf("nombre %s \n", mascota->nombre);
-	printf("tipo %s \n", mascota->tipo);
-	printf("edad %i \n", mascota->edad);
-	printf("raza %s \n", mascota->raza);
-	printf("estatura %i \n", mascota->estatura);
-	printf("peso %.2lf \n", mascota->peso);
-	printf("sexo %c \n", mascota->sexo);
+	printf("Nombre: \t%s\n", mascota->nombre);
+	printf("Tipo: \t\t%s\n", mascota->tipo);
+	printf("Edad: \t\t%i\n", mascota->edad);
+	printf("Raza: \t\t%s\n", mascota->raza);
+	printf("Estatura: \t%i\n", mascota->estatura);
+	printf("Peso: \t\t%.2lf\n", mascota->peso);
+	printf("Sexo: \t\t%c\n", mascota->sexo);
 }
 
 void search(char* nombre, struct ListNode *hashAp){
@@ -108,10 +117,52 @@ void search(char* nombre, struct ListNode *hashAp){
 	fclose(file);
 	free(mascota);
 }
+struct ListNode *readHashTable(){
+	struct ListNode * hashTable = getHashTable();
+	FILE *file;
+	file = fopen("dataDogs.dat", "r");
+	if(file != NULL){
+		struct DogType *mascota;
+    		mascota = malloc(sizeof(struct DogType));
+    		int i = 1;
+		while(fread(mascota, sizeof(struct DogType),1,file)){
+			setElementInHash(hashTable, i, mascota->nombre);
+			i++;
+		}
+		free(mascota);
+		cantidadDeRegistros = i - 1;
+	}else{
+		cantidadDeRegistros = 0; 
+	}
+	return hashTable;
+}
 
-void removeElementInHash(struct ListNode *hashAp, int value, char *name){
+void removeFromFile(int index){
+	FILE *file;
+	FILE *temp;
+	temp = fopen("temp.dat","a+");
+	file = fopen("dataDogs.dat","r");
+
+	struct DogType *mascota;
+	mascota = malloc(sizeof(struct DogType));
 	
-	int hashValue = funHash(name);
+	for(int i = 1; i<=cantidadDeRegistros; i++){
+		fread(mascota, sizeof(struct DogType),1,file);		
+		if(i!=index){
+			fwrite(mascota, sizeof(struct DogType),1, temp);
+		}
+	}
+
+	free(mascota);
+	fclose(file);
+	fclose(temp);
+	system("cp -f temp.dat dataDogs.dat");
+	system("rm temp.dat");
+}
+void removeElementInHash(struct ListNode * hashAp, int value/*char *name*/){
+	removeFromFile(value);
+	hashAp=readHashTable();
+	/*int hashValue = funHash(name);
 	struct ListNode *actual = &hashAp[(int)fabs(hashValue % HASH_SIZE)];
 	struct ListNode *last = NULL;
 	while(actual->used == true && actual->data != value){
@@ -140,29 +191,9 @@ void removeElementInHash(struct ListNode *hashAp, int value, char *name){
 			}
 			actual = actual->next;
 		}
-	}
+	}*/
+	
 	cantidadDeRegistros--;
 }
 
-struct ListNode *readHashTable(){
-	struct ListNode * hashTable = getHashTable();
-	FILE *file;
-	file = fopen("dataDogs.dat", "r");
-	if(file != NULL){
-		struct DogType *mascota;
-    	mascota = malloc(sizeof(struct DogType));
-    	int i = 1;
-		while(fread(mascota, sizeof(struct DogType),1,file)){
-			setElementInHash(hashTable, i, mascota->nombre);
-			i++;
-		}
-		free(mascota);
-		cantidadDeRegistros = i - 1;
-	}else{
-		cantidadDeRegistros = 0; 
-	}
-	
-	
-	return hashTable;
-}
 
